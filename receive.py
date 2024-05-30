@@ -1,0 +1,1 @@
+    # serialstr_read = serial.read
