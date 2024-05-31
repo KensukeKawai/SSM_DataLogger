@@ -18,13 +18,23 @@ class command:
 command_t2c = command(0xA0,0xA8,0xB0,0xB8,0xBF)
 command_c2t = command(0xE0,0xE8,0xF0,0xF8,0xFF)
 
-# Test
-TEST_RESPONSE = [0x05,0xA8,0x00,0x00,0x00,0x61]
+# Element param_list
+NAME = 0
+ADDRESS = 1
+SYM1 = 2
+NUM1 = 3
+SYM2 = 4
+NUM2 = 5
+SYM3 = 6
+NUM3 = 7
+SYM4 = 8
+NUM4 = 9
+UNIT = 10
 
 param_list = [  # param_list[Column][Row]
-    # Param[0]                                  Address[1]                          sym1[2] num1[3] sym2[4] num2[5] sym3[6] num3[7]         sym4[8]     num4[9]         unit[10]
+    # Name[0]                                   Address[1]                          sym1[2] num1[3] sym2[4] num2[5] sym3[6] num3[7]         sym4[8]     num4[9]         unit[10]
     ['Engine_Load',	                            [0x00,0x00,0x07],	                'mul',	100,	'div',	255,	'-',	'-',	        '-',	    '-',	        '%'],
-    ['Coolant_Temperature',	                    [0x00,0x00,0x08],	                'sub',	40,	    '-',	'-',	'-',	'-',	        '-',	    '-',	        '℃'],
+    ['Coolant_Temperature',	                    [0x00,0x00,0x08],	                'sub',	40,	    '-',	'-',	'-',	'-',	        '-',	    '-',	        '°C'],
     ['AirFuel_Correction_No1',	                [0x00,0x00,0x09],	                'sub',	128,	'div',	1.28,	'-',	'-',	        '-',	    '-',	        '%'],
     ['AirFuel_Learning_No1',	                [0x00,0x00,0x0A],	                'sub',	128,	'div',	1.28,	'-',	'-',	        '-',	    '-',	        '%'],
     ['AirFuel_Correction_No2',	                [0x00,0x00,0x0B],	                'sub',	128,	'div',	1.28,	'-',	'-',	        '-',	    '-',	        '%'],
@@ -33,7 +43,7 @@ param_list = [  # param_list[Column][Row]
     ['Engine_Speed',	                        [0x00,0x00,0x0F,0x00,0x00,0x0E],	'div',	4,	    '-',	'-',	'-',	'-',	        '-',	    '-',	        'rpm'],
     ['Vehicle_Speed',	                        [0x00,0x01,0x00],	                '-',	'-',	'-',	'-',	'-',	'-',	        '-',	    '-',	        'km/h'],
     ['Ignition_Timing',	                        [0x00,0x01,0x01],	                'sub',	128,	'div',	2,	    '-',	'-',	        '-',	    '-',	        'deg'],
-    ['Intake_Air_Temperature',	                [0x00,0x01,0x02],	                'sub',	40,	    '-',	'-',	'-',	'-',	        '-',	    '-',	        '℃'],
+    ['Intake_Air_Temperature',	                [0x00,0x01,0x02],	                'sub',	40,	    '-',	'-',	'-',	'-',	        '-',	    '-',	        '°C'],
     ['Mass_Air_Flow',	                        [0x00,0x01,0x04,0x00,0x01,0x03],	'div',	100,	'-',	'-',	'-',	'-',	        '-',	    '-',	        'grams/s'],
     ['Throttle_Opening_Angle',	                [0x00,0x01,0x05],	                'mul',	100,	'div',	255,	'-',	'-',	        '-',	    '-',	        '%'],
     ['Front_O2_Sensor_No1',	                    [0x00,0x01,0x07,0x00,0x01,0x06],	'mul',	0.005,	'-',	'-',	'-',	'-',	        '-',	    '-',	        'V'],
@@ -53,7 +63,7 @@ param_list = [  # param_list[Column][Row]
     ['CO_Adjustment',	                        [0x00,0x02,0x07],	                'mul',	0.02,	'-',	'-',	'-',	'-',	        '-',	    '-',	        'V'],
     ['Learned_Ignition_Timing',	                [0x00,0x02,0x08],	                'sub',	128,	'div',	2,	    '-',	'-',	        '-',	    '-',	        'deg'],
     ['Accelerator_Opening_Angle',	            [0x00,0x02,0x09],	                'div',	2.56,	'-',	'-',	'-',	'-',	        '-',	    '-',	        '%'],
-    ['Fuel_Temperature',	                    [0x00,0x02,0x0A],	                'sub',	40,	    '-',	'-',	'-',	'-',	        '-',	    '-',	        '℃'],
+    ['Fuel_Temperature',	                    [0x00,0x02,0x0A],	                'sub',	40,	    '-',	'-',	'-',	'-',	        '-',	    '-',	        '°C'],
     ['Front_O2_Heater_No1',	                    [0x00,0x02,0x0B],	                'mul',	10.04,	'div',	256,	'-',	'-',	        '-',	    '-',	        'A'],
     ['Rear_O2_Heater_Current',	                [0x00,0x02,0x0C],	                'mul',	10.04,	'div',	256,	'-',	'-',	        '-',	    '-',	        'A'],
     ['Front_O2_Heater_No2',	                    [0x00,0x02,0x0D],	                'mul',	10.04,	'div',	256,	'-',	'-',	        '-',	    '-',	        'A'],
@@ -101,7 +111,7 @@ param_list = [  # param_list[Column][Row]
     ['Main_Accelerator_Sensor',	                [0x01,0x00,0x03],	                'mul',	0.02,	'-',	'-',	'-',	'-',	        '-',	    '-',	        'V'],
     ['Brake_Booster_Pressure',	                [0x01,0x00,0x04],	                'mul',	37,	    'div',	255,	'mul',	6.89476,	    '-',	    '-',	        'kPa'],
     ['Fuel_Pressure_High',	                    [0x01,0x00,0x05],	                'mul',	0.04,	'-',	'-',	'-',	'-',	        '-',	    '-',	        'Mpa'],
-    ['Exhaust_Gas_Temperature',	                [0x01,0x00,0x06],	                'add',	40,	    'mul',	5,	    '-',	'-',	        '-',	    '-',	        '℃'],
+    ['Exhaust_Gas_Temperature',	                [0x01,0x00,0x06],	                'add',	40,	    'mul',	5,	    '-',	'-',	        '-',	    '-',	        '°C'],
     ['Cold_Start_Injector',	                    [0x01,0x00,0x08],	                'mul',	0.256,	'-',	'-',	'-',	'-',	        '-',	    '-',	        'ms'],
     ['SCV_Step',	                            [0x01,0x00,0x09],	                '-',	'-',	'-',	'-',	'-',	'-',	        '-',	    '-',	        'Step'],
     ['Memorised_Cruise_Speed',	                [0x01,0x00,0x0A],	                '-',	'-',	'-',	'-',	'-',	'-',	        '-',	    '-',	        'km/h'],

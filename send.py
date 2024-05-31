@@ -4,9 +4,9 @@ import struct
 from copy import copy
 
 # Serial Initialize. SSM Setting.
-uart = serial.Serial(port="COM14", baudrate=4800, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE)
+uart = serial.Serial(port="COM14", baudrate=4800, bytesize=8, timeout=0.004, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE)
 
-def send2ecu(setparam_num):
+def send_measuring(setparam_num):
 
     # send_dataは固定。extend,appendで結合させていく。
     # send_data = param.HEADER_T2Cにすると同値になり、異なる変数宣言も同じアドレスが割り当てられてしまうため
@@ -35,7 +35,17 @@ def send2ecu(setparam_num):
     # struct.packでバイナリ変数生成
     fmt = str(len(send_data)) + "B" # struct.packのByte数を計算
     send_str = struct.pack(fmt,*send_data)   # バイナリ送信するためstruct.packで結合。引数データはint型である必要がある。
-
-    print(send_str)
-
     uart.write(send_str)
+    
+    # print(send_data)
+    # print(send_str)
+    
+
+def send_communication_test():
+    send_data = [0x80,0x10,0xF0,0x05,0xA8,0x00,0x00,0x00,0x61,0x8E]
+    # struct.packでバイナリ変数生成
+    fmt = str(len(send_data)) + "B" # struct.packのByte数を計算
+    send_str = struct.pack(fmt,*send_data)   # バイナリ送信するためstruct.packで結合。引数データはint型である必要がある。
+    uart.write(send_str)
+    
+    # print(send_str)

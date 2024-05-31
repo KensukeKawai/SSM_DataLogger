@@ -11,11 +11,11 @@ import param
 def BytesToHex(Bytes):
     return ''.join(["0x%02X " % x for x in Bytes]).strip()
 
-setparam_num = [0,1,2]
-# print(setparam_num)
+setparam_num = [6,23,24,0,12,10,14,7]
 
 while True:
-    send.send2ecu(setparam_num)
+    send.send_measuring(setparam_num)
+    receive.receive_measuring(setparam_num)
     time.sleep(1)
 
     # try:
