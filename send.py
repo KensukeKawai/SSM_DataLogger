@@ -6,14 +6,14 @@ from copy import copy
 # Serial Initialize. SSM Setting.
 uart = serial.Serial(port="COM14", baudrate=4800, bytesize=8, timeout=0.004, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE)
 
-def send_measuring(setparam_num):
+def send_measuring(selected_index):
 
     # send_dataは固定。extend,appendで結合させていく。
     # send_data = param.HEADER_T2Cにすると同値になり、異なる変数宣言も同じアドレスが割り当てられてしまうため
     # copyメソッドで明示的に別のオブジェクトを作成
     send_data = copy(param.HEADER_T2C)   
     
-    param_count = len(setparam_num)
+    param_count = len(selected_index)
     
     # Byte Count Calculation. Add 2 Bytes(Command+PP) to All Address Bytes.
     bytes_num = param_count * 3 + 2
@@ -24,7 +24,7 @@ def send_measuring(setparam_num):
 
     # Add Param Address
     for i in range(param_count):
-        param_address = param.param_list[setparam_num[i]][1]
+        param_address = param.param_list[selected_index[i]][1]
         send_data.extend(param_address)
 
     # CheckSum

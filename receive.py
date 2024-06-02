@@ -23,25 +23,26 @@ def check_header(receive_header):
     
     return check
 
-def receive_measuring(setparam_num):
-    # receive_str = serial.read
+def receive_measuring(selected_index):
     measurement_data = []
+    
+    # Receive process
+    # # receive_str = serial.read
     # Ex.Engine Speed
     # receive_str = [0x80,0xF0,0x10,0x03,0xE8,0xFD,0x0A,0x72]
     # Ex.MAP,AP,MRP,EL,TOA,IAT,ROS,ES
-    receive_str = [0x80,0xF0,0x10,0x0B,0xE8,0x21,0x64,0x3D,0x33,0x04,0x70,0x9D,0x00,0xFC,0x0A,0x7F]
+    # receive_str = [0x80,0xF0,0x10,0x0B,0xE8,0x21,0x64,0x3D,0x33,0x04,0x70,0x9D,0x00,0xFC,0x0A,0x7F]
+    receive_str = [0x80,0xF0,0x10,0x0B,0xE8,0x33,0x21,0xFC,0x0A,0x70,0x04,0x9D,0x00,0x64,0x3D,0x7F]
 
     checksum_result = checksum(receive_str)
     header_result = check_header(receive_str[:3])
-    
-    print("checksum:{}, header:{}".format(checksum_result,header_result))
     
     if checksum_result == 1 & header_result == 1:
         receive_successful = 1
         data_offset_pre = 1                   # initialize of offset bytes of data
         
-        for i in range(len(setparam_num)):  # Numbers of Measuring Param
-            param_column = setparam_num[i]
+        for i in range(len(selected_index)):  # Numbers of Measuring Param
+            param_column = selected_index[i]
             
             # Check to Numbers of Bytes,offset
             data_offset = int(DATA_OFFSET + data_offset_pre)
@@ -67,8 +68,10 @@ def receive_measuring(setparam_num):
                     break
             measurement_data.append(cal_data)
             
-            print("{}:{} [{}]".format(param.param_list[param_column][param.NAME],measurement_data[i],param.param_list[param_column][param.UNIT]))
+            # print("{}:{} [{}]".format(param.param_list[param_column][param.NAME],measurement_data[i],param.param_list[param_column][param.UNIT]))
     else:
+        if checksum_result==0: print('Checksum Error!!!')
+        if header_result==0: print('Header Error!!!')
         receive_successful = 0
     
     return receive_successful,measurement_data
