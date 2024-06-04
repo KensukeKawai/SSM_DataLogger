@@ -1,4 +1,5 @@
-import send
+
+import serial
 import param
 
 DATA_OFFSET = 4     # 0x80,0xF0,0x10,Byte-num,Command,-1

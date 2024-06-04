@@ -3,19 +3,13 @@ import time
 import param
 import PySimpleGUI as sg
 
+# Global Variable
+param_num = len(param.param_list)
+table_data = []
+
+# Constant
 BLANK_BOX = '☐'
 CHECKED_BOX = '☑'
-table_data = []
-selected_index = []
-measure_layout = []
-
-check_sequence = 0
-# 0:View List
-# 1:Put Check Mark and 'Start'
-# 2:Not Put Check Mark and 'Start'
-# 3:CLOSED or 'Exit'
-
-param_num = len(param.param_list)
 
 for i in range(param_num):
     cha = [BLANK_BOX, param.param_list[i][0], param.param_list[i][10]]
@@ -39,23 +33,15 @@ checklist_layout = [
     [sg.Button("Start"),sg.Button("Exit")]
 ]
 
-window_checklist = sg.Window("SSM Measuring Tool v1.0", checklist_layout, resizable=True)
-
+window_checklist = sg.Window("SSM Measurement Tool v1.0", checklist_layout, resizable=True)
 
 def my_index_multi(l, x):
     return [i for i, _x in enumerate(l) if _x == x]
 
-def measure_init():
-    measure_layout.extend([sg.Text(key=param.param_list[selected_index[i]][0])] for i in range(selected_num))
-    return sg.Window("SSM Measurement Tool v1.0",measure_layout,resizable=True)
-
-def measure_update(receive_data):
-    window_measure.read(timeout=0, timeout_key="-timeout-") # timeout=0にすれば即時updateで更新可能
-    [window_measure[param.param_list[selected_index[i]][0]].update(receive_data[i]) for i in range(selected_num)]
-
-while True:
+def checklist_display():
+    global selected_index
+    global selected_num
     event, values = window_checklist.read()
-    # print(event, values)
     
     if event == '-TABLE-' and values[event]:
         row = values[event][0]
@@ -65,24 +51,25 @@ while True:
             table_data[row][0] = BLANK_BOX
         window_checklist['-TABLE-'].update(values=table_data)
         
-    if event in (None, 'Start'):
+    if event == 'Start':
         # 選択したパラメータのIndexを取得
         table_selected = [table_data[i][0] for i in range(param_num)]
         selected_index = my_index_multi(table_selected,CHECKED_BOX)
-        selected_num = len(selected_index)
+        selected_num = len(selected_index)        
         print("Checked Index: {}".format(selected_index))
-        check_sequence = 1 if selected_index else 2     # チェック入れたか判定
-        if check_sequence == 1:
+        
+        if selected_index:      # チェック入れたか判定
             print("-----Start Measurement!-----")
-            window_measure = measure_init()
+            window_checklist.close()
             time.sleep(1)
-            break
+            return 1
         else:
             print("-----Please Put Check Mark and Push 'Start' Button!-----")
+            return 0
     
-    if (event == sg.WIN_CLOSED) or (event in (None,'Exit')):
-        check_sequence = 3
+    if (event == sg.WIN_CLOSED) or (event == 'Exit') or (event == None):
         print("-----Bye-----")
-        break
-
-window_checklist.close()
+        window_checklist.close()
+        return 3
+    else:
+        return 0
