@@ -30,7 +30,8 @@ checklist_layout = [
         col_widths = [5,30,8],
         size = (1,60)
         )],
-    [sg.Button("Start"),sg.Button("Exit")]
+    [sg.Button("Start"),sg.Button("Exit")],
+    [sg.Menu([["File", ["Open", "Save", "Exit"]]])]
 ]
 
 window_checklist = sg.Window("SSM Measurement Tool v1.0", checklist_layout, resizable=True)

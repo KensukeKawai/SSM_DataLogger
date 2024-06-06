@@ -9,6 +9,7 @@ import receive
 import param
 import checklist as cl
 import measure as ms
+import global_val as g
 
 
 def BytesToHex(Bytes):
@@ -22,18 +23,20 @@ check_sequence = 0
 # 3:CLOSED or 'Exit'
 
 # Const
-SLEEP_TIME_S = 0.1
 
 while True:         #checklist.pyのwhileを抜けるとここに入る
+    start_time = time.time()
     if check_sequence == 0:
         check_sequence = cl.checklist_display()
     elif check_sequence == 1: # Checked Mark and 'Start'
+        
         send.send_measuring(cl.selected_index)      # Send from Toll to ECU
         receive_successful, receive_data = receive.receive_measuring(cl.selected_index)     # Receive from ECU
         event = ms.measure_update(receive_data)         # Update Measurement Tool
-        time.sleep(SLEEP_TIME_S)
         if event == (None,None): break      # timeout=0の場合WIN_CLOSEDイベント取れない、Closeすると（None,None）になる
     else: break
+    end_time = time.time()
+    g.refresh_time = round((end_time - start_time)*1000)
 
     # try:
 
