@@ -71,6 +71,6 @@ def checklist_display():
     if (event == sg.WIN_CLOSED) or (event == 'Exit') or (event == None):
         print("-----Bye-----")
         window_checklist.close()
-        return 3
+        return 2
     else:
         return 0

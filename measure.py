@@ -35,22 +35,7 @@ def measure_init():
         start = var_num_z
         end = row_num*2+var_num_z
         
-        # for i in range(var_num_z,var_num+var_num_z):
-        #     name = (param.param_list[cl.selected_index[i]][0]).replace('_',' ')
-        #     unit = sg.Text('    [ '+ param.param_list[cl.selected_index[i]][10] +' ]',font=('Helvetica',fontsize_unit))
-        #     value = [ sg.Text(key=param.param_list[cl.selected_index[i]][0], font=('Helvetica',fontsize_value)), unit ]
-        #     test = [sg.Text('100')]
-            
-        #     frame = [sg.Frame([name],[value],size=(800,200),font=('Helvetica',fontsize_frame)),sg.Frame(['test'],[test],size=(800,200),font=('Helvetica',fontsize_frame))]
-        #     layout.extend([frame])
-            
-        # tab_name = 'Tab'+str(n)
-        # layout_tab.extend( [sg.Tab(tab_name,layout)] )
-        # var_num_z += var_num
-        
         for i in range(start,end,2):
-            print("z: {}, var_num: {}, row_num: {}, i: {}".format(var_num_z,var_num,row_num,i))
-            print("start: {}, end: {}".format(start,end))
             name1 = (param.param_list[cl.selected_index[i]][0]).replace('_',' ')
             unit1 = sg.Text('    [ '+ param.param_list[cl.selected_index[i]][10] +' ]',font=('Helvetica',fontsize_unit))
             value1 = [ sg.Text(key=param.param_list[cl.selected_index[i]][0], font=('Helvetica',fontsize_value)), unit1 ]
@@ -71,6 +56,7 @@ def measure_init():
         
     layout_tabgroup = [ [sg.TabGroup([layout_tab],font=('Helvetica',20))] ]
     layout_tabgroup.extend( [[sg.Text('Rate：',font=('Helvetica',20)),sg.Text(key='-refresh time-',font=('Helvetica',20)),sg.Text(' [ms]',font=('Helvetica',15))]] )
+    layout_tabgroup.extend( [sg.Menu([["File", ["Open", "Save", "Exit"]]])] )
     window_measure = sg.Window("SSM Measurement Tool v1.0",layout_tabgroup,resizable=True)
     
     trg = 1

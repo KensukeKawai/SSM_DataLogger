@@ -1,8 +1,12 @@
 
 import serial
 import param
+import send
+import struct
+import sys
 
 DATA_OFFSET = 4     # 0x80,0xF0,0x10,Byte-num,Command,-1
+RECEIVE_MAXNUM = 1000
 
 def checksum(receive_data):
     checksum_hex_str = hex(sum(receive_data[:-1]))[-2:]    # ヘッダー～Dataまで合算→16進数変換→下位2Byteを抽出
@@ -26,14 +30,28 @@ def check_header(receive_header):
 
 def receive_measuring(selected_index):
     measurement_data = []
+    receive_str = []
+
+    num = send.send_num + send.receive_num
     
     # Receive process
-    # # receive_str = serial.read
+    receive_str_all_bytes = send.uart.read(num)
+    receive_str_all = list(receive_str_all_bytes)
+    receive_str_slice = receive_str_all[send.send_num:]
+    receive_str = receive_str_slice
+    
+    print(num)
+    print(receive_str_all_bytes)
+    print(receive_str_all)
+    print(len(receive_str_all))
+    print(receive_str_slice)
+    print(type(receive_str_slice))
+
     # Ex.Engine Speed
     # receive_str = [0x80,0xF0,0x10,0x03,0xE8,0xFD,0x0A,0x72]
     # Ex.MAP,AP,MRP,EL,TOA,IAT,ROS,ES
     # receive_str = [0x80,0xF0,0x10,0x0B,0xE8,0x21,0x64,0x3D,0x33,0x04,0x70,0x9D,0x00,0xFC,0x0A,0x7F]
-    receive_str = [0x80,0xF0,0x10,0x0B,0xE8,0x33,0x21,0xFC,0x0A,0x70,0x04,0x9D,0x00,0x64,0x3D,0x7F]
+    # receive_str = [0x80,0xF0,0x10,0x0B,0xE8,0x33,0x21,0xFC,0x0A,0x70,0x04,0x9D,0x00,0x64,0x3D,0x7F]
 
     checksum_result = checksum(receive_str)
     header_result = check_header(receive_str[:3])
@@ -69,7 +87,6 @@ def receive_measuring(selected_index):
                     break
             measurement_data.append(cal_data)
             
-            # print("{}:{} [{}]".format(param.param_list[param_column][param.NAME],measurement_data[i],param.param_list[param_column][param.UNIT]))
     else:
         if checksum_result==0: print('Checksum Error!!!')
         if header_result==0: print('Header Error!!!')
