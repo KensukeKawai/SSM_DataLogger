@@ -1,14 +1,14 @@
 
 # importは、そのファイル内を”実行”する
-# import serial
+# Standart Library
 import time
 import numpy as np
-# import view_list_ports as vlp
+# Local Module
 import send
 import receive
-import param
-import checklist as cl
-import measure as ms
+import communication
+import checklist
+import measure
 import global_val as g
 
 
@@ -16,29 +16,39 @@ def BytesToHex(Bytes):
     return ''.join(["0x%02X " % x for x in Bytes]).strip()
 
 # Global Variable
-check_sequence = 0
-# 0:Default
+mode = 0
+# 0:Default, Not Put Check Mark and 'Start'
 # 1:Put Check Mark and 'Start'
-# 2:Not Put Check Mark and 'Start'
-# 3:CLOSED or 'Exit'
+# 2:CLOSED or 'Exit'
 
 # Const
+
+# Instantiate
+chk = checklist.checklist()
+snd = communication.send()
+rec = communication.receive()
 
 while True:
     # send.send_communication_test()
     start_time = time.time()
-    if check_sequence == 0:
-        check_sequence = cl.checklist_display()
-    elif check_sequence == 1: # Checked Mark and 'Start'
-        send.send_measuring(cl.selected_index)      # Send from Toll to ECU
-        receive_successful, receive_data = receive.receive_measuring(cl.selected_index)     # Receive from ECU
-        event = ms.measure_update(receive_data)         # Update Measurement Tool
+    
+    if mode == 0:
+        mode,selected_index = chk.display()
+        print(mode)
+        
+    elif mode == 1: # Checked Mark and 'Start'
+        snd.send_measuring(selected_index)      # Send from Toll to ECU
+        rec_success, rec_data = rec.receive_measuring(selected_index,snd)     # Receive from ECU
+        event = measure.measure_update(selected_index,rec_data)         # Update Measurement Tool
         if event == (None,None): break      # timeout=0の場合WIN_CLOSEDイベント取れない、Closeすると（None,None）になる
         elif event == 'Save':
             print('Save!!!')
         elif event == 'Exit':
             print('Exit!!!')
-    else: break
+            
+    else:
+        break
+    
     end_time = time.time()
     g.refresh_time = round((end_time - start_time)*1000)
 
