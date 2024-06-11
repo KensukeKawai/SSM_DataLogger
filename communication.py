@@ -7,14 +7,14 @@ from copy import copy
 import param
 
 class send():
-    def __init__(self):
+    def __init__(self,selected_port):
         self.UART_TIMEOUT = 0.05 #[s]
         self.send_num = 0
         self.address_num = 0
         
         # Serial Instantiate
         # self.ser = serial.Serial(port="COM17", baudrate=4800, bytesize=8, timeout=self.self.ser_TIMEOUT, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE)
-        self.ser = serial.Serial(port="COM14", baudrate=4800, bytesize=8, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE)
+        self.ser = serial.Serial(port=selected_port, baudrate=4800, bytesize=8, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE)
 
     def send_communication_test(self):
         send_data = [0x80,0x10,0xF0,0x05,0xA8,0x00,0x00,0x00,0x61,0x8E]

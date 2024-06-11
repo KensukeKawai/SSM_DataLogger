@@ -4,7 +4,7 @@ import PySimpleGUI as sg
 import math
 # Local Module
 import param
-import global_val as g
+import globalval as g
 
 # Constant
 ROW_MAX = 4
@@ -58,7 +58,7 @@ def measure_init(selected_num,selected_index):
     layout_tabgroup = [ [sg.TabGroup([layout_tab],font=('Helvetica',20))] ]
     layout_tabgroup.extend( [[sg.Text('Rate：',font=('Helvetica',20)),sg.Text(key='-refresh time-',font=('Helvetica',20)),sg.Text(' [ms]',font=('Helvetica',15))]] )
     # layout_tabgroup.extend( [sg.Menu([["File", ["Open", "Save", "Exit"]]])] )
-    window_measure = sg.Window("SSM Measurement Tool v1.0",layout_tabgroup,resizable=True)
+    window_measure = sg.Window(g.TOOL_NAME,layout_tabgroup,resizable=True)
     
     trg = 1
 

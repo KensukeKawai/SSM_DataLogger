@@ -4,6 +4,7 @@ import time
 import PySimpleGUI as sg
 # Local Module
 import param
+import globalval as g
 
 class checklist:
     def __init__(self):        #self.はインスタンス変数、つかないのはメソッド内ローカル変数
@@ -39,7 +40,7 @@ class checklist:
             [sg.Menu([["File", ["Open", "Save", "Exit"]]])]
         ]
 
-        self.window_checklist = sg.Window("SSM Measurement Tool v1.0", self.checklist_layout, resizable = True)
+        self.window_checklist = sg.Window(g.TOOL_NAME, self.checklist_layout, resizable = True)
         
     def my_index_multi(self,l,x):
         return [i for i, _x in enumerate(l) if _x == x]
@@ -65,17 +66,17 @@ class checklist:
                 print("-----Start Measurement!-----")
                 self.window_checklist.close()
                 time.sleep(1)
-                return 1, self.selected_index
+                return g.MEASUREMENT_MODE, self.selected_index
             else:
                 print("-----Please Put Check Mark and Push 'Start' Button!-----")
-                return 0, self.selected_index
+                return g.CHECKLIST_MODE, self.selected_index
         
         if (event == sg.WIN_CLOSED) or (event == 'Exit') or (event == None):
             print("-----Bye-----")
             self.window_checklist.close()
-            return 2, self.selected_index
+            return g.END_MODE, self.selected_index
         else:
-            return 0, self.selected_index
+            return g.CHECKLIST_MODE, self.selected_index
 
 
 
@@ -110,7 +111,7 @@ class checklist:
 #     [sg.Menu([["File", ["Open", "Save", "Exit"]]])]
 # ]
 
-# window_checklist = sg.Window("SSM Measurement Tool v1.0", checklist_layout, resizable=True)
+# window_checklist = sg.Window(g.TOOL_NAME, checklist_layout, resizable=True)
 
 # def my_index_multi(l, x):
 #     return [i for i, _x in enumerate(l) if _x == x]
