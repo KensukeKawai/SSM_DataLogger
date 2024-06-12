@@ -40,9 +40,9 @@ class checklist:
             [sg.Menu([["File", ["Open", "Save", "Exit"]]])]
         ]
 
-        self.window_checklist = sg.Window(g.TOOL_NAME, self.checklist_layout, resizable = True)
+        self.window_checklist = sg.Window(g.TOOL_NAME, self.checklist_layout, resizable=True)
         
-    def my_index_multi(self,l,x):
+    def my_index_multi(self, l, x):
         return [i for i, _x in enumerate(l) if _x == x]
 
     def display(self):
@@ -59,7 +59,7 @@ class checklist:
         if event == 'Start':
             # 選択したパラメータのIndexを取得
             table_selected = [self.table_data[i][0] for i in range(self.param_num)]
-            self.selected_index = self.my_index_multi(table_selected,self.CHECKED_BOX)
+            self.selected_index = self.my_index_multi(table_selected, self.CHECKED_BOX)
             print("Checked Index: {}".format(self.selected_index))
             
             if self.selected_index:      # チェック入れたか判定

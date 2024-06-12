@@ -16,8 +16,8 @@ class portselect():
             self.comlist.append(p.device)
             
         self.layout = [
-            [sg.Text("Please Select COM Port",font=('Helvetica',12))],
-            [sg.Listbox(self.portlist,size=(0,0))],
+            [sg.Text("Please Select COM Port", font=('Helvetica',12))],
+            [sg.Listbox(self.portlist, size=(0,0))],
             [sg.Text("")],
             [sg.Button("Measure"),sg.Button("Test Mode"),sg.Button("End")]
         ]
