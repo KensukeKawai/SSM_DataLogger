@@ -63,11 +63,11 @@ def measure_init(selected_num,selected_index):
     trg = 1
 
 # Update Measuremet Tool
-def measure_update(selected_index,receive_data):
+def measure_update(selected_index,receive_data,refresh_time):
     global trg
     selected_num = len(selected_index)
     if trg == 0: measure_init(selected_num,selected_index)
     event = window_measure.read(timeout=0, timeout_key="-timeout-") # timeout=0にすれば即時updateで更新可能
     [window_measure[param.param_list[selected_index[i]][0]].update(round(receive_data[i],ndigits=VALUE_NDIGITS)) for i in range(selected_num)]
-    [window_measure['-refresh time-'].update(g.refresh_time)]
+    [window_measure['-refresh time-'].update(refresh_time)]
     return event

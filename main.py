@@ -16,7 +16,7 @@ def BytesToHex(Bytes):
 
 # Global Variable
 mode = g.PORTSELECT_MODE
-
+refresh_time = 0
 # Const
 
 # Instantiate
@@ -38,10 +38,10 @@ while True:
         
         snd.send_measuring(selected_index)      # Send from Toll to ECU
         rec_success, rec_data = rec.receive_measuring(selected_index,snd)     # Receive from ECU
-        event = measure.measure_update(selected_index,rec_data)         # Update Measurement Tool
+        event = measure.measure_update(selected_index,rec_data,refresh_time)         # Update Measurement Tool
         
         end_time = time.time()
-        g.refresh_time = round((end_time - start_time)*1000)
+        refresh_time = round((end_time - start_time)*1000)
         
         if event == (None,None): break      # timeout=0の場合WIN_CLOSEDイベント取れない、Closeすると（None,None）になる
         
@@ -50,6 +50,7 @@ while True:
             
         elif event == 'Exit':
             print('Exit!!!')
+            break
     
     elif mode == g.TEST_MODE:
         snd.send_communication_test()

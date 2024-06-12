@@ -34,7 +34,7 @@ class checklist:
                     row_height = 15,
                     font = 'Helvetica 9',
                     col_widths = [5,30,8],
-                    size = (1,60)
+                    size = (1,55)
                     )],
             [sg.Button("Start"), sg.Button("Exit")],
             [sg.Menu([["File", ["Open", "Save", "Exit"]]])]
