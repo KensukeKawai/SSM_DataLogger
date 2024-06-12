@@ -8,4 +8,3 @@ TEST_MODE = 3
 END_MODE = 99
 
 # Variable
-refresh_time = 0
