@@ -5,7 +5,7 @@ import serial.tools.list_ports
 import PySimpleGUI as sg
 import globalval as g
 
-class portselect():
+class portselect:
     def __init__(self):
         self.portlist = []
         self.comlist = []

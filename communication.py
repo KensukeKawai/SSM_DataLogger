@@ -6,7 +6,7 @@ from copy import copy
 # Local Module
 import param
 
-class send():
+class send:
     def __init__(self,selected_port):
         self.UART_TIMEOUT = 0.05 #[s]
         self.send_num = 0

@@ -7,7 +7,7 @@ import param
 import globalval as g
 
 
-class measure():
+class measure:
     def __init__(self, selected_index):
         # Constant
         self.ROW_MAX = 4
