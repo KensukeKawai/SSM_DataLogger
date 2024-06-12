@@ -31,7 +31,7 @@ SYM4 = 8
 NUM4 = 9
 UNIT = 10
 
-param_list = [  # param_list[Column][Row]
+param_list = [  # param_list[Row][Column]
     # Name[0]                                   Address[1]                          sym1[2] num1[3] sym2[4] num2[5] sym3[6] num3[7]         sym4[8]     num4[9]         unit[10]
     ['Engine_Load',	                            [0x00,0x00,0x07],	                'mul',	100,	'div',	255,	'-',	'-',	        '-',	    '-',	        '%'],
     ['Coolant_Temperature',	                    [0x00,0x00,0x08],	                'sub',	40,	    '-',	'-',	'-',	'-',	        '-',	    '-',	        '°C'],
