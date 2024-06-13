@@ -1,14 +1,15 @@
 
-# def view_list_ports():
-    # List of Ports
+# Standart Library
 import serial.tools.list_ports
 import PySimpleGUI as sg
+# Local Module
 import globalval as g
 
 class portselect:
     def __init__(self):
         self.portlist = []
         self.comlist = []
+        self.comport = 0
         
         self.ports = list(serial.tools.list_ports.comports())
         for p in self.ports:
@@ -29,40 +30,44 @@ class portselect:
             selected_port = str(values[0])[2:-2]        # Conversion list to str. Remove [''].
             
             if selected_port != '':
-                comport = self.comlist[self.portlist.index(selected_port)]
+                self.comport = self.comlist[self.portlist.index(selected_port)]
                 self.window.close()
                 print("Select Port: {}".format(selected_port))
-                return g.CHECKLIST_MODE, comport
+                return g.CHECKLIST_MODE
             else:
                 print("-----Please Select COM Port!-----")
-                return g.PORTSELECT_MODE, 0
+                self.comport = 0
+                return g.PORTSELECT_MODE
         
         elif event == "Test Mode":
             selected_port = str(values[0])[2:-2]        # Conversion list to str. Remove [''].
             
             if selected_port != '':
-                comport = self.comlist[self.portlist.index(selected_port)]
+                self.comport = self.comlist[self.portlist.index(selected_port)]
                 # self.window.close()
                 print("Select Port: {}".format(selected_port))
-                return g.TEST_MODE, comport
+                return g.TEST_MODE
             else:
                 print("-----Please Select COM Port!-----")
-                return g.PORTSELECT_MODE, 0
+                self.comport = 0
+                return g.PORTSELECT_MODE
         
         elif event == sg.WIN_CLOSED or event == "End":
             self.window.close()
+            self.comport = 0
             print("-----Bye-----")
-            return g.END_MODE, 0
+            return g.END_MODE
         
         else:
-            return g.CHECKLIST_MODE, 0
+            self.comport = 0
+            return g.CHECKLIST_MODE
 
 
 # def view_list_ports():
     # List of Ports
 # import serial.tools.list_ports
 
-# ports = list(serial.tools.list_ports.comports())
+# ports = list(serial.tools.list_ports.self.comports())
 # for p in ports:
 #     print(p)
 #     print(" device       :", p.device)

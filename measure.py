@@ -6,7 +6,6 @@ import math
 import param
 import globalval as g
 
-
 class measure:
     def __init__(self, selected_index):
         # Constant
@@ -61,7 +60,8 @@ class measure:
                 sg.Text(' [ms]', font=('Helvetica',15))
             ]] )
         
-        # layout_tabgroup.extend( [sg.Menu([["File", ["Open", "Save", "Exit"]]])] )
+        layout_tabgroup.extend( [[sg.Menu([["File", ["Open", "Save", "Exit"]]])]] )
+        
         self.window_measure = sg.Window(g.TOOL_NAME,layout_tabgroup,resizable=True)
         
     # Update Measuremet Tool
@@ -69,6 +69,7 @@ class measure:
         event = self.window_measure.read(timeout=0, timeout_key="-timeout-") # timeout=0にすれば即時updateで更新可能
         [self.window_measure[param.param_list[selected_index[i]][0]].update(round(receive_data[i], ndigits=self.VALUE_NDIGITS)) for i in range(self.selected_num)]
         [self.window_measure['-refresh time-'].update(refresh_time)]
+        
         return event
     
     

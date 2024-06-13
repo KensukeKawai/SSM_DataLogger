@@ -3,12 +3,13 @@
 import serial
 import struct
 from copy import copy
+import time
 # Local Module
 import param
 
 class send:
     def __init__(self,selected_port):
-        self.UART_TIMEOUT = 0.05 #[s]
+        self.UART_TIMEOUT = 0.05 #[s]       短くしすぎると車両からのレスポンスを待ちきれずタイムアウトする、注意
         self.send_num = 0
         self.address_num = 0
         
@@ -22,6 +23,8 @@ class send:
         fmt = str(len(send_data)) + "B" # struct.packのByte数を計算
         send_hex = struct.pack(fmt,*send_data)   # バイナリ送信するためstruct.packで結合。引数データはint型である必要がある。
         self.ser.write(send_hex)
+        
+        return None
 
     def send_measuring(self,selected_index):
         self.address_num = 0
@@ -57,13 +60,22 @@ class send:
         send_hex = struct.pack(fmt,*send_data)   # バイナリ送信するためstruct.packで結合。引数データはint型である必要がある。
         self.ser.write(send_hex)
         
+        return None
 
 
 # Communication test関数を追加する
 class receive:
-    def __init__(self):
+    def __init__(self,selected_index):
+        # Const
         self.DATA_OFFSET = 4     # 0x80,0xF0,0x10,Byte-num,Command,-1
+        self.VALUE_NDIGITS = 3
+        # Variable
+        self.refresh_time = 0
+        self.measure_time = 0
+        self.start_time = time.time()
         self.receive_datalist = []
+        self.timeseries_data = [['Time']]
+        [self.timeseries_data.append([param.param_list[selected_index[i]][0]]) for i in range(len(selected_index))]
 
     def rec_chksum_header(self):
         checksum_hex_hex = hex(sum(self.receive_hex[:-1]))[-2:]    # ヘッダー～Dataまで合算→16進数変換→下位2Byteを抽出
@@ -72,6 +84,8 @@ class receive:
         # Judgement
         self.checksum_result = 1 if checksum_dec_int == self.receive_hex[-1] else 0
         self.header_result = 1 if self.receive_hex[:3] == param.HEADER_C2T else 0
+        
+        return None
 
     def receive_measuring(self,selected_index,snd):
         self.receive_datalist = []
@@ -121,9 +135,18 @@ class receive:
                         break
                 self.receive_datalist.append(cal_data)
                 
+                # Time Series Data Processing
+                self.timeseries_data[i+1].append(round(cal_data,ndigits=self.VALUE_NDIGITS))
+            
+            end_time = time.time()
+            self.refresh_time = round((end_time-self.start_time)*1000)
+            self.measure_time += self.refresh_time
+            self.timeseries_data[0].append(self.measure_time/1000)
+            self.start_time = time.time()
+                
         else:
             if self.checksum_result==0: print('Checksum Error!!!')
             if self.header_result==0: print('Header Error!!!')
             receive_success = 0
         
-        return receive_success, self.receive_datalist
+        return None

@@ -66,17 +66,17 @@ class checklist:
                 print("-----Start Measurement!-----")
                 self.window_checklist.close()
                 time.sleep(1)
-                return g.MEASUREMENT_MODE, self.selected_index
+                return g.MEASUREMENT_MODE
             else:
                 print("-----Please Put Check Mark and Push 'Start' Button!-----")
-                return g.CHECKLIST_MODE, self.selected_index
+                return g.CHECKLIST_MODE
         
         if (event == sg.WIN_CLOSED) or (event == 'Exit') or (event == None):
             print("-----Bye-----")
             self.window_checklist.close()
-            return g.END_MODE, self.selected_index
+            return g.END_MODE
         else:
-            return g.CHECKLIST_MODE, self.selected_index
+            return g.CHECKLIST_MODE
 
 
 
