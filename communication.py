@@ -140,9 +140,9 @@ class receive:
             
             end_time = time.time()
             self.refresh_time = round((end_time-self.start_time)*1000)
+            self.start_time = time.time()
             self.measure_time += self.refresh_time
             self.timeseries_data[0].append(self.measure_time/1000)
-            self.start_time = time.time()
                 
         else:
             if self.checksum_result==0: print('Checksum Error!!!')

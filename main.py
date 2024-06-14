@@ -34,7 +34,6 @@ while True:
     
     # Measurement Mode
     elif mode == g.MEASUREMENT_MODE: # Checked Mark and 'Start'
-        start_time = time.time()
         
         snd.send_measuring(chkgui.selected_index)      # Send from Toll to ECU
         rec.receive_measuring(chkgui.selected_index, snd)     # Receive from ECU
