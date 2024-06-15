@@ -9,7 +9,7 @@ import param
 
 class send:
     def __init__(self,selected_port):
-        self.UART_TIMEOUT = 0.05 #[s]       短くしすぎると車両からのレスポンスを待ちきれずタイムアウトする、注意
+        self.UART_TIMEOUT = 0.2 #[s]       短くしすぎると車両からのレスポンスを待ちきれずタイムアウトする、注意
         self.send_num = 0
         self.address_num = 0
         
@@ -95,12 +95,12 @@ class receive:
         read_bytes = snd.send_num + self.receive_num
         
         # Receive process
-        # receive_hex_allbytes = snd.ser.read(read_bytes)
-        # receive_hex_alllist = list(receive_hex_allbytes)
-        # self.receive_hex = receive_hex_alllist[snd.send_num:]
+        receive_hex_allbytes = snd.ser.read(read_bytes)
+        receive_hex_alllist = list(receive_hex_allbytes)
+        self.receive_hex = receive_hex_alllist[snd.send_num:]
         
         # Ex.0,6,7,10,12,14,23,24
-        self.receive_hex = [0x80,0xF0,0x10,0x0B,0xE8,0x33,0x21,0xFC,0x0A,0x70,0x04,0x9D,0x00,0x64,0x3D,0x7F]
+        # self.receive_hex = [0x80,0xF0,0x10,0x0B,0xE8,0x33,0x21,0xFC,0x0A,0x70,0x04,0x9D,0x00,0x64,0x3D,0x7F]
 
         self.rec_chksum_header()
         
