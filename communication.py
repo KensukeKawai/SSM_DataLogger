@@ -69,9 +69,16 @@ class receive:
         # Const
         self.DATA_OFFSET = 4     # 0x80,0xF0,0x10,Byte-num,Command,-1
         self.VALUE_NDIGITS = 3
+        self.REC_ERRCNT = 10
+        self.STS_SUCCESS = 1
+        self.STS_CHKSUMERR = 2
+        self.STS_HEADERERR = 3
+        self.STS_ERROR = 4
         # Variable
         self.refresh_time = 0
         self.measure_time = 0
+        self.receive_sts = self.STS_SUCCESS
+        self.error_count = 0
         self.start_time = time.time()
         self.receive_datalist = []
         self.timeseries_data = [['Time']]
@@ -95,17 +102,18 @@ class receive:
         read_bytes = snd.send_num + self.receive_num
         
         # Receive process
-        receive_hex_allbytes = snd.ser.read(read_bytes)
-        receive_hex_alllist = list(receive_hex_allbytes)
-        self.receive_hex = receive_hex_alllist[snd.send_num:]
+        # receive_hex_allbytes = snd.ser.read(read_bytes)
+        # receive_hex_alllist = list(receive_hex_allbytes)
+        # self.receive_hex = receive_hex_alllist[snd.send_num:]
         
         # Ex.0,6,7,10,12,14,23,24
-        # self.receive_hex = [0x80,0xF0,0x10,0x0B,0xE8,0x33,0x21,0xFC,0x0A,0x70,0x04,0x9D,0x00,0x64,0x3D,0x7F]
+        self.receive_hex = [0x80,0xF0,0x10,0x0B,0xE8,0x33,0x21,0xFC,0x0A,0x70,0x04,0x9D,0x00,0x64,0x3D,0x7F]
 
         self.rec_chksum_header()
         
         if self.checksum_result == 1 & self.header_result == 1:
-            receive_success = 1
+            self.receive_sts = self.STS_SUCCESS
+            self.error_count = 0
             data_offset_pre = 1                   # initialize of offset bytes of data
             
             for i in range(len(selected_index)):  # Numbers of Measuring Param
@@ -144,9 +152,17 @@ class receive:
             self.measure_time += self.refresh_time
             self.timeseries_data[0].append(self.measure_time/1000)
                 
-        else:
-            if self.checksum_result==0: print('Checksum Error!!!')
-            if self.header_result==0: print('Header Error!!!')
-            receive_success = 0
+        elif self.checksum_result == 0:
+            print('Checksum Error!!!')
+            self.error_count += 1
+            if self.error_count >= self.REC_ERRCNT:
+                self.receive_sts = self.STS_ERROR
+            else:
+                self.receive_sts = self.STS_CHKSUMERR
+                
+        # elif self.header_result==0:
+        #     print('Header Error!!!')
+        #     self.receive_success = 0
+        #     self.error_count += 1
         
         return None

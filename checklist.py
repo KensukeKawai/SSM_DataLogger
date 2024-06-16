@@ -31,12 +31,13 @@ class checklist:
                     select_mode = sg.TABLE_SELECT_MODE_EXTENDED,
                     enable_events = True,
                     key = '-TABLE-',
-                    row_height = 15,
-                    font = 'Helvetica 9',
+                    row_height = 18,
+                    font = 'Helvetica 11',
                     col_widths = [5,30,8],
-                    size = (1,55)
+                    size = (1,45),
+                    alternating_row_color='#3d5f80'
                     )],
-            [sg.Button("Start"), sg.Button("Exit")],
+            [sg.Button("Start",font=('Helvetica',15),size=(10,0)), sg.Button("Exit",font=('Helvetica',15),size=(10,0))],
             [sg.Menu([["File", ["Open", "Save", "Exit"]]])]
         ]
 

@@ -6,7 +6,6 @@ import communication
 import checklist
 import measure
 import portselect
-import savefile
 import globalval as g
 
 # Global Variable
@@ -37,17 +36,19 @@ while True:
         
         snd.send_measuring(chkgui.selected_index)      # Send from Toll to ECU
         rec.receive_measuring(chkgui.selected_index, snd)     # Receive from ECU
-        event = mesgui.measure_update(chkgui.selected_index, rec.receive_datalist, rec.refresh_time)         # Update Measured Value
+        # if rec.receive_sts == rec.STS_SUCCESS:
+        event = mesgui.measure_update(chkgui.selected_index, rec)         # Update Measured Value
+        # elif rec.receive_sts == rec.STS_ERROR:
+        #     event = 'RecError'
         
         if event == (None,None): break      # timeout=0の場合WIN_CLOSEDイベント取れない、Closeすると（None,None）になる
         
-        elif 'Save' in event:
-            savefile.savefile(rec.timeseries_data)
-            print('Save!!!')
-            break
-            
         elif 'Exit' in event:
             print('Exit!!!')
+            break
+        
+        elif 'RecError' in event:
+            print('Receive Error!!!')
             break
     
     # Test Mode

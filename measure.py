@@ -5,6 +5,7 @@ import math
 # Local Module
 import param
 import globalval as g
+import savefile
 
 class measure:
     def __init__(self, selected_index):
@@ -17,8 +18,11 @@ class measure:
         self.FONTSIZE_FRAME = 35
         self.FRAME_WIDTH = 850
         self.FRAME_HEIGHT = 210
+        self.STS_MEASURING = 1
+        self.STS_STOP = 2
         #Variable
         self.selected_num = 0
+        self.status_z = self.STS_MEASURING
         layout_tab = []
         layout_tabgroup = []
         var_num = 0
@@ -56,8 +60,16 @@ class measure:
         layout_tabgroup = [ [sg.TabGroup([layout_tab], font=('Helvetica',20))] ]
         layout_tabgroup.extend( [[
                 sg.Text('Rate：', font=('Helvetica',20)),
-                sg.Text(key='-refresh time-', font=('Helvetica',20)),
-                sg.Text(' [ms]', font=('Helvetica',15))
+                sg.Text(key='-refresh time-', font=('Helvetica',24)),
+                sg.Text(' [ms]         ', font=('Helvetica',20)),
+                sg.Text('Measure Status：', font=('Helvetica',20)),
+                sg.Text(key='-messtatus-', font=('Helvetica',24)),
+                sg.Text('             ', font=('Helvetica',20)),
+                sg.Text('Save：', font=('Helvetica',20)),
+                sg.Text(key='-savestatus-', font=('Helvetica',24)),
+                sg.Text('             ', font=('Helvetica',20)),
+                sg.Button('Start',font=('Helvetica',20),size=(15,0)),
+                sg.Button('Save & Stop',font=('Helvetica',20),size=(15,0))
             ]] )
         
         layout_tabgroup.extend( [[sg.Menu([["File", ["Open", "Save", "Exit"]]])]] )
@@ -65,14 +77,40 @@ class measure:
         self.window_measure = sg.Window(g.TOOL_NAME,layout_tabgroup,resizable=True)
         
     # Update Measuremet Tool
-    def measure_update(self, selected_index, receive_data, refresh_time):
+    def measure_update(self, selected_index, rec):
         event = self.window_measure.read(timeout=0, timeout_key="-timeout-") # timeout=0にすれば即時updateで更新可能
-        [self.window_measure[param.param_list[selected_index[i]][0]].update(round(receive_data[i], ndigits=self.VALUE_NDIGITS)) for i in range(self.selected_num)]
-        [self.window_measure['-refresh time-'].update(refresh_time)]
+        print('Start' in event)
+        print('Stop' in event)
         
+        if (rec.receive_sts == rec.STS_SUCCESS):
+            if 'Save & Stop' in event:
+                savefile.savefile(rec.timeseries_data)
+                [self.window_measure['-refresh time-'].update(' - ')]
+                [self.window_measure['-messtatus-'].update('Stop             ')]
+                [self.window_measure['-savestatus-'].update('Done      ')]
+                self.status_z = self.STS_STOP
+                
+            elif ((self.status_z == self.STS_STOP) and ('Start' in event)) or (self.status_z == self.STS_MEASURING):
+                [self.window_measure[param.param_list[selected_index[i]][0]].update(round(rec.receive_datalist[i], ndigits=self.VALUE_NDIGITS)) for i in range(self.selected_num)]
+                [self.window_measure['-refresh time-'].update(rec.refresh_time)]
+                [self.window_measure['-messtatus-'].update('Measuring...')]
+                [self.window_measure['-savestatus-'].update('Not Done')]
+                self.status_z = self.STS_MEASURING
+
+        else:
+            [self.window_measure['-refresh time-'].update(' - ')]
+            [self.window_measure['-messtatus-'].update('Receive Error ')]
+            self.status_z = self.STS_STOP
+            
+        if 'Save' in event:
+            [self.window_measure['-refresh time-'].update(' - ')]
+            [self.window_measure['-messtatus-'].update('Stop             ')]
+            [self.window_measure['-savestatus-'].update('Done      ')]
+            self.status_z = self.STS_STOP
+            
         return event
     
-    
+
 # # Constant
 # ROW_MAX = 4
 # VAR_PER_TAB = ROW_MAX*2
