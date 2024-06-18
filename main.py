@@ -24,7 +24,7 @@ while True:
         if mode == g.CHECKLIST_MODE:
             snd = communication.send(portgui.comport)               # Instantiate Send Class with Selected COMPort
         elif mode == g.TEST_MODE:
-            sndtest = communication.send(portgui.comport)           # Instantiate Send Class with Selected COMPort
+            sndtest = communication.send(portgui.comport)           # Instantiate Send Class with Selected COMPort for Com Test
             rectest = communication.receive([0])                    # Instantiate Receive Class for Com Test          
     
     # Check List Mode
