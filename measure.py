@@ -72,15 +72,13 @@ class measure:
                 sg.Button('Save & Stop',font=('Helvetica',20),size=(15,0))
             ]] )
         
-        layout_tabgroup.extend( [[sg.Menu([["File", ["Open", "Save", "Exit"]]])]] )
+        # layout_tabgroup.extend( [[sg.Menu([["File", ["Open", "Save", "Exit"]]])]] )
         
         self.window_measure = sg.Window(g.TOOL_NAME,layout_tabgroup,resizable=True)
         
     # Update Measuremet Tool
     def measure_update(self, selected_index, rec):
         event = self.window_measure.read(timeout=0, timeout_key="-timeout-") # timeout=0にすれば即時updateで更新可能
-        print('Start' in event)
-        print('Stop' in event)
         
         if (rec.receive_sts == rec.STS_SUCCESS):
             if 'Save & Stop' in event:
@@ -100,12 +98,6 @@ class measure:
         else:
             [self.window_measure['-refresh time-'].update(' - ')]
             [self.window_measure['-messtatus-'].update('Receive Error ')]
-            self.status_z = self.STS_STOP
-            
-        if 'Save' in event:
-            [self.window_measure['-refresh time-'].update(' - ')]
-            [self.window_measure['-messtatus-'].update('Stop             ')]
-            [self.window_measure['-savestatus-'].update('Done      ')]
             self.status_z = self.STS_STOP
             
         return event

@@ -6,27 +6,31 @@ from copy import copy
 import time
 # Local Module
 import param
+import globalval as g
 
 class send:
-    def __init__(self,selected_port):
-        self.UART_TIMEOUT = 0.2 #[s]       短くしすぎると車両からのレスポンスを待ちきれずタイムアウトする、注意
+    def __init__(self, selected_port):
+        # Const
+        self.UART_TIMEOUT = 1 #[s]       短くしすぎると車両からのレスポンスを待ちきれずタイムアウトする、注意
+        self.TEST_SENDDATA = [0x80,0x10,0xF0,0x05,0xA8,0x00,0x00,0x00,0x61,0x8E]
+        self.TEST_SENDBYTES = len(self.TEST_SENDDATA)
+        # Variable
         self.send_num = 0
         self.address_num = 0
         
         # Serial Instantiate
-        # self.ser = serial.Serial(port="COM17", baudrate=4800, bytesize=8, timeout=self.self.ser_TIMEOUT, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE)
-        self.ser = serial.Serial(port=selected_port, baudrate=4800, bytesize=8, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE)
+        self.ser = serial.Serial(port=selected_port, baudrate=4800, bytesize=8, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE, timeout=self.UART_TIMEOUT)
 
     def send_communication_test(self):
-        send_data = [0x80,0x10,0xF0,0x05,0xA8,0x00,0x00,0x00,0x61,0x8E]
-        # struct.packでバイナリ変数生成
-        fmt = str(len(send_data)) + "B" # struct.packのByte数を計算
-        send_hex = struct.pack(fmt,*send_data)   # バイナリ送信するためstruct.packで結合。引数データはint型である必要がある。
+        # send_data = self.TEST_SENDDATA
+        # Set Binary for struct.pack
+        fmt = str(len(self.TEST_SENDDATA)) + "B"             # Calculate number of bytes for struct.pack
+        send_hex = struct.pack(fmt,*self.TEST_SENDDATA)      # バイナリ送信するためstruct.packで結合。引数データはint型である必要がある。
         self.ser.write(send_hex)
         
         return None
 
-    def send_measuring(self,selected_index):
+    def send_measuring(self, selected_index):
         self.address_num = 0
 
         # send_dataは固定。extend,appendで結合させていく。
@@ -50,14 +54,14 @@ class send:
             send_data.extend(param_address)
 
         # CheckSum
-        checksum_hex_hex = hex(sum(send_data))[-2:]    # ヘッダー～Dataまで合算→16進数変換→下位2Byteを抽出
-        checksum_dec_int = int(checksum_hex_hex,16)       # 組み込み関数intでstrをintに変換(hex関数で10→16進数変換するとint→strに型変換されてしまうため、再度intにするため10進数に戻す)
+        checksum_hex_hex = hex(sum(send_data))[-2:]         # ヘッダー～Dataまで合算→16進数変換→下位2Byteを抽出
+        checksum_dec_int = int(checksum_hex_hex,16)         # 組み込み関数intでstrをintに変換(hex関数で10→16進数変換するとint→strに型変換されてしまうため、再度intにするため10進数に戻す)
         send_data.append(checksum_dec_int)
         self.send_num = len(send_data)
 
-        # struct.packでバイナリ変数生成
-        fmt = str(len(send_data)) + "B" # struct.packのByte数を計算
-        send_hex = struct.pack(fmt,*send_data)   # バイナリ送信するためstruct.packで結合。引数データはint型である必要がある。
+        # Set Binary for struct.pack
+        fmt = str(len(send_data)) + "B"             # Calculate number of bytes for struct.pack
+        send_hex = struct.pack(fmt,*send_data)      # バイナリ送信するためstruct.packで結合。引数データはint型である必要がある。
         self.ser.write(send_hex)
         
         return None
@@ -65,8 +69,13 @@ class send:
 
 # Communication test関数を追加する
 class receive:
-    def __init__(self,selected_index):
+    def __init__(self, selected_index):
         # Const
+        self.TEST_RECDATA = [0x80,0xF0,0x10,0x02,0xE8,0x08,0x72]
+        self.TEST_RECBYTES = len(self.TEST_RECDATA)
+        self.TEST_FAILURE = 0
+        self.TEST_SUCCESS = 1
+        self.TEST_TIMEOUT = 2
         self.DATA_OFFSET = 4     # 0x80,0xF0,0x10,Byte-num,Command,-1
         self.VALUE_NDIGITS = 3
         self.REC_ERRCNT = 10
@@ -84,6 +93,30 @@ class receive:
         self.timeseries_data = [['Time']]
         [self.timeseries_data.append([param.param_list[selected_index[i]][0]]) for i in range(len(selected_index))]
 
+    def rec_communication_test(self, snd):
+        # Calculate expected bytes received
+        read_bytes = snd.TEST_SENDBYTES + self.TEST_RECBYTES
+        
+        # Receive process
+        receive_hex_allbytes = snd.ser.read(read_bytes)
+        receive_hex_alllist = list(receive_hex_allbytes)
+        receive_hex = receive_hex_alllist[snd.TEST_SENDBYTES:]
+        
+        # Timeout
+        if receive_hex_alllist == []:
+            print('Receive Error：Timeout...Please Check COM Port')
+            # test_result = self.TEST_TIMEOUT
+        # Receive Complete
+        else:
+            if receive_hex == self.TEST_RECDATA:
+                print('TEST Successful')
+                # test_result = self.TEST_SUCCESS
+            else:
+                print('Receive Error：Different Data')
+                # test_result = self.TEST_FAILURE
+        
+        return g.PORTSELECT_MODE #, test_result
+
     def rec_chksum_header(self):
         checksum_hex_hex = hex(sum(self.receive_hex[:-1]))[-2:]    # ヘッダー～Dataまで合算→16進数変換→下位2Byteを抽出
         checksum_dec_int = int(checksum_hex_hex,16)       # 組み込み関数intでstrをintに変換(hex関数で10→16進数変換するとint→strに型変換されてしまうため、再度intにするため10進数に戻す)
@@ -94,22 +127,23 @@ class receive:
         
         return None
 
-    def receive_measuring(self,selected_index,snd):
+    def receive_measuring(self, selected_index, snd):
         self.receive_datalist = []
 
         # Calculate expected bytes received
-        self.receive_num = 3 + 1 + 1 + round(snd.address_num/3) + 1
-        read_bytes = snd.send_num + self.receive_num
+        receive_num = 3 + 1 + 1 + round(snd.address_num/3) + 1  # Header(3)+ByteNum(1)+Command(1)+Data+ChkSum(1)
+        read_bytes = snd.send_num + receive_num
         
         # Receive process
-        # receive_hex_allbytes = snd.ser.read(read_bytes)
-        # receive_hex_alllist = list(receive_hex_allbytes)
-        # self.receive_hex = receive_hex_alllist[snd.send_num:]
+        if g.debug_mode == 0:
+            receive_hex_allbytes = snd.ser.read(read_bytes)
+            receive_hex_alllist = list(receive_hex_allbytes)
+            self.receive_hex = receive_hex_alllist[snd.send_num:]
         
-        # Ex.0,6,7,10,12,14,23,24
-        self.receive_hex = [0x80,0xF0,0x10,0x0B,0xE8,0x33,0x21,0xFC,0x0A,0x70,0x04,0x9D,0x00,0x64,0x3D,0x7F]
+        else:
+            self.receive_hex = [0x80,0xF0,0x10,0x0B,0xE8,0x33,0x21,0xFC,0x0A,0x70,0x04,0x9D,0x00,0x64,0x3D,0x7F]        # No.0,6,7,10,12,14,23,24
 
-        self.rec_chksum_header()
+        self.rec_chksum_header()        # Check CheckSum and Header
         
         if self.checksum_result == 1 & self.header_result == 1:
             self.receive_sts = self.STS_SUCCESS
@@ -146,6 +180,7 @@ class receive:
                 # Time Series Data Processing
                 self.timeseries_data[i+1].append(round(cal_data,ndigits=self.VALUE_NDIGITS))
             
+            # Calculate refresh time
             end_time = time.time()
             self.refresh_time = round((end_time-self.start_time)*1000)
             self.start_time = time.time()

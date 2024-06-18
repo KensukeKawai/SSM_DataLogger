@@ -44,7 +44,6 @@ class portselect:
             
             if selected_port != '':
                 self.comport = self.comlist[self.portlist.index(selected_port)]
-                # self.window.close()
                 print("Select Port: {}".format(selected_port))
                 return g.TEST_MODE
             else:
